@@ -1,0 +1,6 @@
+{
+  "$schema": "https://www.partykit.io/schema.json",
+  "name": "waypoint-relay",
+  "main": "party/index.ts",
+  "compatibilityDate": "2026-09-03"
+}
