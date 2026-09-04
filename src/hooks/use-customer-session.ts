@@ -27,6 +27,7 @@ type UseCustomerSessionReturn = {
   sessionCode: string | null
   connected: boolean
   pendingProposal: PendingProposal | null
+  sessionEndedReason: 'rep' | 'customer' | null
   startSession: () => void
   endSession: () => void
   approveProposal: () => void
@@ -40,11 +41,15 @@ export function useCustomerSession(
   onExecuteTool: (tool: string, args: Record<string, unknown>) => unknown,
 ): UseCustomerSessionReturn {
   const [sessionCode, setSessionCode] = useState<string | null>(null)
+  const [sessionEndedReason, setSessionEndedReason] = useState<
+    'rep' | 'customer' | null
+  >(null)
   const [pendingProposal, setPendingProposal] =
     useState<PendingProposal | null>(null)
   const orderStateRef = useRef(orderState)
   const onExecuteToolRef = useRef(onExecuteTool)
   const sendRef = useRef<(data: string) => void>(() => {})
+  const disconnectRef = useRef<() => void>(() => {})
 
   useLayoutEffect(() => {
     orderStateRef.current = orderState
@@ -77,6 +82,11 @@ export function useCustomerSession(
           })
         } else if (message.type === 'request_state') {
           broadcastState()
+        } else if (message.type === 'session_ended') {
+          disconnectRef.current()
+          setSessionCode(null)
+          setPendingProposal(null)
+          setSessionEndedReason(message.initiator)
         }
       } catch {}
     },
@@ -93,6 +103,7 @@ export function useCustomerSession(
 
   useLayoutEffect(() => {
     sendRef.current = send
+    disconnectRef.current = disconnect
   })
 
   useEffect(() => {
@@ -153,14 +164,13 @@ export function useCustomerSession(
 
       registerSafe({
         name: 'apply_promo_code',
-        description:
-          'Apply a promotional discount code to the current order. Valid active codes: SUMMER2026 (20% off), WELCOME10 (10% off), SAVE20 (20% off), DISCOUNT10 (10% off). If promo code SUMMER was expired, use the active replacement SUMMER2026.',
+        description: 'Apply a promotional discount code to the current order.',
         inputSchema: {
           type: 'object',
           properties: {
             code: {
               type: 'string',
-              description: 'The promo code to apply, e.g. SUMMER2026 or SAVE20',
+              description: 'The promo code string to apply to the order',
             },
           },
           required: ['code'],
@@ -192,13 +202,21 @@ export function useCustomerSession(
   }, [orderState, connected, sessionCode, broadcastState])
 
   const startSession = useCallback(() => {
+    setSessionEndedReason(null)
     setSessionCode(generateSessionCode())
   }, [])
 
   const endSession = useCallback(() => {
+    sendRef.current(
+      JSON.stringify({
+        type: 'session_ended',
+        initiator: 'customer',
+      } satisfies RelayMessage),
+    )
     disconnect()
     setSessionCode(null)
     setPendingProposal(null)
+    setSessionEndedReason('customer')
   }, [disconnect])
 
   const approveProposal = useCallback(() => {
@@ -244,6 +262,7 @@ export function useCustomerSession(
     sessionCode,
     connected,
     pendingProposal,
+    sessionEndedReason,
     startSession,
     endSession,
     approveProposal,
@@ -281,14 +300,13 @@ function getToolSchemas(): ToolSchema[] {
     },
     {
       name: 'apply_promo_code',
-      description:
-        'Apply a promotional discount code to the current order. Valid active codes: SUMMER2026 (20% off), WELCOME10 (10% off), SAVE20 (20% off), DISCOUNT10 (10% off). If promo code SUMMER was expired, use the active replacement SUMMER2026.',
+      description: 'Apply a promotional discount code to the current order.',
       inputSchema: {
         type: 'object',
         properties: {
           code: {
             type: 'string',
-            description: 'The promo code to apply, e.g. SUMMER2026 or SAVE20',
+            description: 'The promo code string to apply to the order',
           },
         },
         required: ['code'],
