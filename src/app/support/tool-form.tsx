@@ -59,10 +59,6 @@ export function ToolForm({
               readOnlyHint
             </span>
           </div>
-          <span className='flex items-center gap-1.5 text-[11px] font-mono text-emerald-600'>
-            <span className='h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse' />
-            Live Ingestion Active
-          </span>
         </div>
 
         <div className='p-5 font-mono text-xs bg-zinc-950 text-zinc-200 space-y-3'>
@@ -71,10 +67,6 @@ export function ToolForm({
           </p>
 
           <div className='pt-2.5 border-t border-zinc-800 flex items-center justify-between text-[11px] font-mono text-zinc-400'>
-            <span className='flex items-center gap-1.5 text-emerald-400'>
-              <span className='h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse' />
-              Live Ingestion Active
-            </span>
             <span>Mirrored to Column 1</span>
           </div>
         </div>
