@@ -165,4 +165,4 @@ bun run build
 
 ## License
 
-MIT
+Distributed under the [MIT License](LICENSE.md). See [`LICENSE.md`](LICENSE.md) for full license text.

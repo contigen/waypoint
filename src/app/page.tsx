@@ -238,6 +238,14 @@ export default function Home() {
             <Link href='/support' className='hover:text-black'>
               Support Tab
             </Link>
+            <a
+              href='https://github.com/contigen/waypoint/blob/main/LICENSE.md'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='hover:text-black'
+            >
+              MIT License
+            </a>
           </div>
         </div>
       </footer>
