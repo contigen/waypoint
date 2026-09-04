@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:party": "partykit dev",
+    "deploy:party": "partykit deploy",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
