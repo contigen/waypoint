@@ -50,11 +50,8 @@ const TABS: FeatureTab[] = [
   },
 ]
 
-type CodeSnippetTab = 'tool' | 'relay' | 'confirm'
-
 export function InteractiveShowcase() {
   const [activeTab, setActiveTab] = useState<TabKey>('confined')
-  const [codeTab, setCodeTab] = useState<CodeSnippetTab>('tool')
 
   const currentTab = TABS.find(t => t.key === activeTab) ?? TABS[0]
 
@@ -182,97 +179,6 @@ export function InteractiveShowcase() {
                 </div>
               </div>
             )}
-
-            <div className='rounded-2xl border border-zinc-200/90 bg-white shadow-sm overflow-hidden'>
-              <div className='flex items-center justify-between border-b border-zinc-100 px-4 py-2 bg-zinc-50/50'>
-                <div className='flex items-center gap-2'>
-                  <button
-                    type='button'
-                    onClick={() => setCodeTab('tool')}
-                    className={`rounded-full px-3 py-1 text-xs font-mono transition-colors ${
-                      codeTab === 'tool'
-                        ? 'bg-black text-white'
-                        : 'text-zinc-600 hover:text-black'
-                    }`}
-                  >
-                    WebMCP Registration
-                  </button>
-                  <button
-                    type='button'
-                    onClick={() => setCodeTab('relay')}
-                    className={`rounded-full px-3 py-1 text-xs font-mono transition-colors ${
-                      codeTab === 'relay'
-                        ? 'bg-black text-white'
-                        : 'text-zinc-600 hover:text-black'
-                    }`}
-                  >
-                    PartyKit Dumb Relay
-                  </button>
-                  <button
-                    type='button'
-                    onClick={() => setCodeTab('confirm')}
-                    className={`rounded-full px-3 py-1 text-xs font-mono transition-colors ${
-                      codeTab === 'confirm'
-                        ? 'bg-black text-white'
-                        : 'text-zinc-600 hover:text-black'
-                    }`}
-                  >
-                    Human Gate Flow
-                  </button>
-                </div>
-
-                <span className='text-[11px] font-mono text-zinc-400'>
-                  TypeScript
-                </span>
-              </div>
-
-              <div className='p-5 font-mono text-xs overflow-x-auto bg-zinc-950 text-zinc-200'>
-                {codeTab === 'tool' && (
-                  <pre className='leading-relaxed'>
-                    {`document.modelContext.registerTool({
-  name: "apply_promo_code",
-  description: "Apply a promo code to the current order",
-  inputSchema: {
-    type: "object",
-    properties: {
-      code: { type: "string", description: "The promo code to apply" }
-    },
-    required: ["code"]
-  },
-  annotations: { readOnlyHint: false },
-  async execute({ code }) {
-    return applyPromoToCheckout(code);
-  }
-});`}
-                  </pre>
-                )}
-
-                {codeTab === 'relay' && (
-                  <pre className='leading-relaxed'>
-                    {`export default class RelayServer implements Party.Server {
-  constructor(readonly room: Party.Room) {}
-
-  onMessage(message: string, sender: Party.Connection) {
-    this.room.broadcast(message, [sender.id]);
-  }
-}`}
-                  </pre>
-                )}
-
-                {codeTab === 'confirm' && (
-                  <pre className='leading-relaxed'>
-                    {`socket.send(JSON.stringify({
-  type: "propose_action",
-  tool: "apply_promo_code",
-  args: { code: "SUMMER2026" }
-}));
-
-const result = await document.modelContext.executeTool(tool, args);
-socket.send(JSON.stringify({ type: "action_result", tool, result }));`}
-                  </pre>
-                )}
-              </div>
-            </div>
 
             <div className='pt-2 flex flex-wrap items-center gap-4'>
               <Link
