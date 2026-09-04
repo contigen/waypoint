@@ -88,17 +88,6 @@ export function InteractiveShowcase() {
                 )
               })}
             </nav>
-
-            <div className='mt-8 rounded-2xl border border-zinc-200/80 bg-zinc-50 p-5'>
-              <p className='text-xs font-semibold uppercase tracking-wider text-zinc-700 mb-2'>
-                Hackathon Demo Notice
-              </p>
-              <p className='text-xs text-zinc-500 leading-relaxed'>
-                Session codes are lightweight shared room keys for live demos,
-                not authenticated user identities. Designed for zero-risk
-                hackathon evaluation.
-              </p>
-            </div>
           </div>
 
           <div className='lg:col-span-8 space-y-8'>
