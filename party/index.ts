@@ -17,6 +17,8 @@ export default class RelayServer implements Party.Server {
       const parsed = JSON.parse(message) as { type?: string }
       if (parsed.type === 'session_state') {
         this.lastState = message
+      } else if (parsed.type === 'session_ended') {
+        this.lastState = null
       }
     } catch {}
     this.room.broadcast(message, [sender.id])

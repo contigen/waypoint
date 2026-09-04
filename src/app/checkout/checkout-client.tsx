@@ -85,6 +85,7 @@ export function CheckoutClient({ initialOrderState }: CheckoutClientProps) {
     sessionCode,
     connected,
     pendingProposal,
+    sessionEndedReason,
     startSession,
     endSession,
     approveProposal,
@@ -206,6 +207,27 @@ export function CheckoutClient({ initialOrderState }: CheckoutClientProps) {
                 End Help Session
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {!sessionCode && sessionEndedReason === 'rep' && (
+        <div className='border-b border-zinc-200 bg-zinc-50 px-4 py-2.5 text-xs text-zinc-700'>
+          <div className='mx-auto flex max-w-7xl items-center justify-between gap-4'>
+            <div className='flex items-center gap-2'>
+              <span className='h-2 w-2 rounded-full bg-zinc-400' />
+              <span>
+                Live support session was concluded by the support
+                representative.
+              </span>
+            </div>
+            <button
+              type='button'
+              onClick={startSession}
+              className='rounded-full bg-black px-3.5 py-1 text-[11px] font-medium text-white hover:bg-zinc-800 transition-colors'
+            >
+              Reopen Session
+            </button>
           </div>
         </div>
       )}
@@ -340,6 +362,11 @@ export function CheckoutClient({ initialOrderState }: CheckoutClientProps) {
                       placeholder='97477'
                       value={orderState.shippingAddress.zip}
                       onChange={e => handleAddressChange('zip', e.target.value)}
+                      onBlur={() =>
+                        setOrderState(prev =>
+                          applyShippingAddress(prev, prev.shippingAddress),
+                        )
+                      }
                       className='w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-black focus:outline-none transition-colors'
                     />
                   </div>
