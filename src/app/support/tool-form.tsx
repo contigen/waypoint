@@ -119,6 +119,25 @@ export function ToolForm({
           </div>
         )}
 
+      {tool.name === 'apply_promo_code' && (
+        <div className='mt-3 rounded-lg bg-zinc-50 border border-zinc-100 px-3 py-2 text-[11px] text-zinc-600 flex justify-between items-center'>
+          <span className='truncate'>
+            Active internal code:{' '}
+            <span className='font-mono font-medium text-zinc-800'>
+              SUMMER2026
+            </span>{' '}
+            (20% off)
+          </span>
+          <button
+            type='button'
+            onClick={() => setValues(prev => ({ ...prev, code: 'SUMMER2026' }))}
+            className='ml-2 shrink-0 font-mono text-[10px] font-medium text-black hover:underline'
+          >
+            Insert code
+          </button>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className='mt-4 space-y-3'>
         {fields.length > 0 && (
           <div className='text-[10px] font-mono uppercase tracking-wider text-zinc-400'>
