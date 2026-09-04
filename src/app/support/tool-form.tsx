@@ -47,6 +47,41 @@ export function ToolForm({
     })
   }
 
+  if (isReadOnly) {
+    return (
+      <div className='rounded-2xl border border-zinc-200/90 bg-white shadow-sm overflow-hidden transition-all hover:border-zinc-300'>
+        <div className='flex items-center justify-between border-b border-zinc-100 px-4 py-2.5 bg-zinc-50/80'>
+          <div className='flex items-center gap-2'>
+            <span className='rounded-full bg-black text-white px-3 py-0.5 text-xs font-mono font-medium'>
+              {tool.name}
+            </span>
+            <span className='rounded-full bg-zinc-200/70 border border-zinc-300/50 px-2 py-0.5 text-[10px] font-mono text-zinc-700'>
+              readOnlyHint
+            </span>
+          </div>
+          <span className='flex items-center gap-1.5 text-[11px] font-mono text-emerald-600'>
+            <span className='h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse' />
+            Live Ingestion Active
+          </span>
+        </div>
+
+        <div className='p-5 font-mono text-xs bg-zinc-950 text-zinc-200 space-y-3'>
+          <p className='text-xs text-zinc-300 leading-relaxed font-sans'>
+            {tool.description}
+          </p>
+
+          <div className='pt-2.5 border-t border-zinc-800 flex items-center justify-between text-[11px] font-mono text-zinc-400'>
+            <span className='flex items-center gap-1.5 text-emerald-400'>
+              <span className='h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse' />
+              Live Ingestion Active
+            </span>
+            <span>Mirrored to Column 1</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className='rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-sm transition-all hover:border-zinc-300'>
       <div className='flex items-center justify-between pb-3 border-b border-zinc-100'>
@@ -55,15 +90,9 @@ export function ToolForm({
             {tool.name}
           </span>
         </div>
-        {isReadOnly ? (
-          <span className='rounded-full bg-blue-50 border border-blue-200 px-2 py-0.5 text-[10px] font-mono text-blue-700'>
-            readOnlyHint
-          </span>
-        ) : (
-          <span className='rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-[10px] font-mono text-amber-800'>
-            requires customer gate
-          </span>
-        )}
+        <span className='rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-[10px] font-mono text-amber-800'>
+          requires customer gate
+        </span>
       </div>
 
       <p className='mt-2.5 text-xs text-zinc-500 leading-relaxed'>
@@ -93,7 +122,7 @@ export function ToolForm({
       <form onSubmit={handleSubmit} className='mt-4 space-y-3'>
         {fields.length > 0 && (
           <div className='text-[10px] font-mono uppercase tracking-wider text-zinc-400'>
-            {isReadOnly ? 'Parameters' : 'Proposed Arguments'}
+            Proposed Arguments
           </div>
         )}
         {fields.map(([key, schema]) => (
@@ -135,7 +164,7 @@ export function ToolForm({
           type='submit'
           className='mt-2 w-full rounded-full bg-black py-2.5 text-xs font-semibold uppercase tracking-wider text-white hover:bg-zinc-800 transition-all active:scale-98 shadow-sm'
         >
-          {isReadOnly ? 'Read Customer State' : 'Propose Action ➔'}
+          Propose Action ➔
         </button>
       </form>
     </div>
