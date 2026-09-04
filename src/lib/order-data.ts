@@ -11,7 +11,6 @@ export const MOCK_ITEMS: OrderItem[] = [
   { id: '3', name: 'Anodized Aluminum Stand', price: 79.99, quantity: 1 },
 ]
 
-
 const VALID_PROMOS: Record<string, number> = {
   SUMMER2026: 0.2,
   WELCOME10: 0.1,
@@ -59,8 +58,7 @@ export function applyPromoCode(state: OrderState, code: string): OrderState {
       promoCode: clean,
       discount: 0,
       total: state.subtotal,
-      error:
-        'Promo code "SUMMER" has expired. Active replacement code is SUMMER2026 (20% off).',
+      error: 'Promo code "SUMMER" has expired.',
     }
   }
 
@@ -88,7 +86,7 @@ export function applyPromoCode(state: OrderState, code: string): OrderState {
       promoCode: clean,
       discount: 0,
       total: state.subtotal,
-      error: `Promo code "${clean}" is not recognized. Valid active codes include SUMMER2026 (20% off), WELCOME10 (10% off), SAVE20, or DISCOUNT10.`,
+      error: `Promo code "${clean}" is not recognized.`,
     }
   }
 
