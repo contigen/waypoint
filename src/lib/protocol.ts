@@ -68,6 +68,11 @@ export type ActionRejectedMessage = {
   reason?: string
 }
 
+export type SessionEndedMessage = {
+  type: 'session_ended'
+  initiator: 'customer' | 'rep'
+}
+
 export type RelayMessage =
   | SessionStateMessage
   | RequestStateMessage
@@ -75,3 +80,4 @@ export type RelayMessage =
   | ActionConfirmedMessage
   | ActionResultMessage
   | ActionRejectedMessage
+  | SessionEndedMessage
