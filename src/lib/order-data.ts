@@ -11,12 +11,6 @@ export const MOCK_ITEMS: OrderItem[] = [
   { id: '3', name: 'Anodized Aluminum Stand', price: 79.99, quantity: 1 },
 ]
 
-export const AVAILABLE_PROMOTIONS: string[] = [
-  'SUMMER2026 (20% off active replacement)',
-  'WELCOME10 (10% off welcome code)',
-  'SAVE20 (20% off)',
-  'DISCOUNT10 (10% off)',
-]
 
 const VALID_PROMOS: Record<string, number> = {
   SUMMER2026: 0.2,
@@ -42,7 +36,6 @@ export function createInitialOrderState(): OrderState {
     error: null,
     subtotal,
     total: subtotal,
-    availablePromotions: AVAILABLE_PROMOTIONS,
   }
 }
 
@@ -113,13 +106,28 @@ export function applyShippingAddress(
   state: OrderState,
   address: ShippingAddress,
 ): OrderState {
+  const updatedAddress = {
+    name: address.name || state.shippingAddress.name,
+    street: address.street || state.shippingAddress.street,
+    city: address.city || state.shippingAddress.city,
+    zip: address.zip || state.shippingAddress.zip,
+  }
+
+  const cleanZip = updatedAddress.zip.trim()
+  let error = state.error
+
+  if (cleanZip && !/^\d{5}(-\d{4})?$/.test(cleanZip)) {
+    error = `Invalid postal code "${cleanZip}". A valid 5-digit ZIP code is required for delivery.`
+  } else if (
+    state.error?.includes('postal code') ||
+    state.error?.includes('ZIP code')
+  ) {
+    error = null
+  }
+
   return {
     ...state,
-    shippingAddress: {
-      name: address.name || state.shippingAddress.name,
-      street: address.street || state.shippingAddress.street,
-      city: address.city || state.shippingAddress.city,
-      zip: address.zip || state.shippingAddress.zip,
-    },
+    shippingAddress: updatedAddress,
+    error,
   }
 }
