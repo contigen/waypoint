@@ -388,7 +388,7 @@ export function CheckoutClient({ initialOrderState }: CheckoutClientProps) {
                 <div className='flex gap-2.5'>
                   <input
                     type='text'
-                    placeholder="Enter promo code (e.g. SUMMER)"
+                    placeholder="Try 'SUMMER' (triggers error) or 'SUMMER2026'"
                     value={orderState.promoCode}
                     onChange={e =>
                       setOrderState(prev => ({
