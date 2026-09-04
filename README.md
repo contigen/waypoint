@@ -1,10 +1,10 @@
 # Waypoint
 
-Zero-Trust, WebMCP-powered co-browsing and remote customer support.
+Zero-Trust, live support co-browsing via WebMCP & PartyKit relay.
 
 Traditional co-browsing tools stream DOM trees or broadcast video feeds over WebRTC. That approach hands support representatives raw access to customer screens, including credit card numbers, passwords, and private inputs.
 
-Waypoint replaces screen-sharing with bounded tool execution. Using Chrome's WebMCP API (`document.modelContext`) and an edge WebSocket relay, the customer's tab exposes structured actions to support representatives. Representatives cannot read unexposed DOM nodes or execute changes unilaterally. Every state mutation requires explicit, client-side customer approval before running.
+Waypoint replaces screen-sharing with bounded tool execution. Using the WebMCP API (`document.modelContext`) and an edge WebSocket relay, the customer's tab exposes structured actions to support representatives. Representatives cannot read unexposed DOM nodes or execute changes unilaterally. Every state mutation requires explicit, client-side customer approval before running.
 
 ---
 
@@ -49,12 +49,16 @@ Waypoint replaces screen-sharing with bounded tool execution. Using Chrome's Web
 ```
 
 ### 1. Structural Confinement
+
 The support representative's tab has zero access to the customer's DOM, cookies, or session storage. The representative sees only:
+
 1. Sanitized order state emitted by read-only tools.
 2. The typed parameter schemas of registered tools.
 
 ### 2. Human Gate Flow
+
 When a representative fills out a form to assist a customer (e.g., updating a shipping address or applying a promo code), their console emits an `action_proposed` event. The customer tab displays a native confirmation modal showing:
+
 - The tool name.
 - The exact proposed arguments.
 - An explicit **Approve** or **Reject** decision.
@@ -62,23 +66,26 @@ When a representative fills out a form to assist a customer (e.g., updating a sh
 Only if the customer approves does the customer tab call `tool.execute(args)` locally.
 
 ### 3. Edge WebSocket Relay
+
 The PartyKit relay (`party/index.ts`) runs on Cloudflare Workers and acts as a blind message router:
+
 - Rooms are keyed by short ephemeral codes (e.g., `K2X85S`).
 - The relay stores no customer credentials, credit cards, or DOM snapshots.
 - When either party disconnects, cached state clears immediately and the peer receives a `session_ended` notification.
 
 ### 4. Dual AI and Human Compatibility
-Because tools register on `document.modelContext`, browser-embedded assistants (like Chrome's Gemini side panel) and human support reps interact with the exact same capabilities and security boundaries.
+
+Because tools register on `document.modelContext`, agents (via ChatGPT & MCP Tools extension) and human support reps interact with the exact same capabilities and security boundaries.
 
 ---
 
 ## WebMCP Tools
 
-| Tool | Type | Schema | Purpose |
-| :--- | :--- | :--- | :--- |
-| `get_order_details` | Read-only | `{}` | Streams cart items, pricing, recipient, and checkout errors to the support console. Runs automatically without gating. |
-| `update_shipping_address` | Mutating | `{ name, street, city, zip }` | Validates postal format (5-digit US ZIP) and updates delivery details upon customer approval. |
-| `apply_promo_code` | Mutating | `{ code }` | Validates coupon rules (`SUMMER2026`, `WELCOME10`), updates order totals, and surfaces errors for expired codes (`SUMMER`). |
+| Tool                      | Type      | Schema                        | Purpose                                                                                                                     |
+| :------------------------ | :-------- | :---------------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `get_order_details`       | Read-only | `{}`                          | Streams cart items, pricing, recipient, and checkout errors to the support console. Runs automatically without gating.      |
+| `update_shipping_address` | Mutating  | `{ name, street, city, zip }` | Validates postal format (5-digit US ZIP) and updates delivery details upon customer approval.                               |
+| `apply_promo_code`        | Mutating  | `{ code }`                    | Validates coupon rules (`SUMMER2026`, `WELCOME10`), updates order totals, and surfaces errors for expired codes (`SUMMER`). |
 
 ---
 
@@ -97,7 +104,7 @@ Because tools register on `document.modelContext`, browser-embedded assistants (
 ### Prerequisites
 
 - [Bun](https://bun.sh) installed locally (`curl -fsSL https://bun.sh/install | bash`).
-- Google Chrome (Canary or Stable with `#enable-experimental-web-platform-features` enabled for WebMCP testing).
+- Google Chrome (Canary or Stable with `#enable-webmcp-testing` flag enabled for WebMCP testing).
 
 ### 1. Install Dependencies
 
@@ -121,7 +128,7 @@ bun run dev
 
 1. Open `http://localhost:3000/checkout` in your browser.
 2. Click **Need Support? Request Live Help** to start a session. Note the 6-character room code.
-3. In a second window (or incognito tab), open `http://localhost:3000/support`.
+3. In a second window (or incognito tab, or a separate device), open `http://localhost:3000/support`.
 4. Enter the room code and connect.
 5. In the support console, propose a shipping address or promo code.
 6. Return to the checkout tab to observe the approval modal. Approve or decline the change.
@@ -151,13 +158,11 @@ waypoint/
 
 ---
 
-## Verification & Quality
+## Build
 
 ```bash
-# Type check and lint
 bun run lint
 
-# Production build
 bun run build
 ```
 
