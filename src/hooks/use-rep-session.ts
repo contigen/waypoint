@@ -1,6 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { usePartySocket } from '@/hooks/use-party-socket'
 import type { OrderState, RelayMessage, ToolSchema } from '@/lib/protocol'
 
@@ -30,6 +36,7 @@ export function useRepSession(): UseRepSessionReturn {
   const [activity, setActivity] = useState<ActivityEvent[]>([])
   const eventCounter = useRef(0)
   const previousStateHash = useRef<string>('')
+  const disconnectRef = useRef<() => void>(() => {})
 
   const addEvent = useCallback(
     (kind: ActivityEvent['kind'], detail: string, tool?: string) => {
@@ -83,6 +90,13 @@ export function useRepSession(): UseRepSessionReturn {
               message.tool,
             )
             break
+          case 'session_ended':
+            addEvent('state_update', 'Session ended by customer')
+            disconnectRef.current()
+            setRoomId(null)
+            setPageState(null)
+            setTools([])
+            break
         }
       } catch {}
     },
@@ -98,6 +112,10 @@ export function useRepSession(): UseRepSessionReturn {
     },
   })
 
+  useLayoutEffect(() => {
+    disconnectRef.current = disconnect
+  })
+
   const join = useCallback((code: string) => {
     setRoomId(code.trim().toUpperCase())
     previousStateHash.current = ''
@@ -107,9 +125,19 @@ export function useRepSession(): UseRepSessionReturn {
   }, [])
 
   const leave = useCallback(() => {
+    send(
+      JSON.stringify({
+        type: 'session_ended',
+        initiator: 'rep',
+      } satisfies RelayMessage),
+    )
     disconnect()
     setRoomId(null)
-  }, [disconnect])
+    previousStateHash.current = ''
+    setActivity([])
+    setTools([])
+    setPageState(null)
+  }, [send, disconnect])
 
   useEffect(() => {
     if (!connected || !roomId || pageState) return
